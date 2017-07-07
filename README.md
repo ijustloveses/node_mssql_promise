@@ -11,6 +11,7 @@ node -v
 npm -v
 
 npm install mssql -g
+npm install JSONStream
 ```
 
 ### reference
@@ -35,3 +36,7 @@ npm install mssql -g
 4. 使用普通的 promise 方式，多个表不再同时异步处理，而是链式的一个处理完了再处理下一个。
     但是写成 promise 链的话，也比较难看，因为要处理成功(resolve) 和失败(reject) 的情况，故此会形成一个大嵌套
     解决方案是我写了个 recursive_promise，递归的方式处理数据表列表，顺眼多了！
+
+最后，如果数据表数据过多，那么直接使用 JSON.stringify(result) 的话会报错： RangeError: Invalid string length
+
+那么，可以使用 JSONStream 包，通过 stream 的方法把数据写入文件，就没问题了

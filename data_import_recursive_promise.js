@@ -4,15 +4,31 @@ var fs = require('fs')
 
 var connstr = "mssql://test:test@test.com/test"
 
+function object_to_jsonfile(obj, fname) {
+    var transformStream = JSONStream.stringify()
+    var outputStream = fs.createWriteStream(fname)
+    transformStream.pipe(outputStream)
+    obj.forEach(transformStream.write)
+    transformStream.end()
+}
+
 function dumpTable(pool, tbl) {
     return new Promise(function(resolve, reject) {
         pool.request()
             .query('select * from ' + tbl, (err, result) => {
                 if (err) return reject(err)
+                try {
+                    object_to_jsonfile(result['recordset'], 'wind.' + tbl + '.json')
+                    return resolve(tbl + ' done')
+                } catch (err) {
+                    return reject(err)
+                }
+                /*  ONLY for 小数据表
                 fs.writeFile(tbl + '.json', JSON.stringify(result), 'utf-8', function(err) {
                     if (err) return reject(err)
                     return resolve(tbl + ' done')
                 })
+                */
             });
     })
 }
